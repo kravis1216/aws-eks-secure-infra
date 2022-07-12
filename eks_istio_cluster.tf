@@ -3,7 +3,7 @@
 # local variables
 #---------------------------------------------------------------
 locals {
-  main_cluster_name                    = "${local.main_cluster_name_prefix}_main_cluster"
+  main_cluster_name                    = "${local.main_cluster_name_prefix}_main"
   launch_template_name_for_main_worker = "${local.launch_template_name_prefix}_main_worker"
 }
 
@@ -12,26 +12,32 @@ locals {
 # modules 
 #---------------------------------------------------------------
 module "main_cluster" {
+/*
   providers = {
     helm = helm.main_cluster
   }
+*/
 
-  source               = "./modules/eks_cluster_istio"
-  cluster_name         = local.main_cluster_name
-  k8s_version          = var.k8s_version
-  cluster_role_arn     = aws_iam_role.eks_cluster_role.arn
+  source = "./modules/eks_cluster"
+
+  cluster_name     = local.main_cluster_name
+  k8s_version      = var.k8s_version
+  cluster_role_arn = aws_iam_role.eks_cluster_role.arn
+  /*
   node_role_arn        = aws_iam_role.eks_nodes_roles.arn
+*/
   encryption_key_arn   = module.eks.kms_key_arn
   encryption_resources = ["secrets"]
   enabled_cluster_log_types = [
     "api", "audit", "authenticator", "controllerManager", "scheduler"
   ]
 
+  /*
   instance_types   = var.node_group_ondemand.instance_types.main_cluster
   desired_capacity = var.node_group_ondemand.desired_capacity
   max_capacity     = var.node_group_ondemand.max_capacity
   min_capacity     = var.node_group_ondemand.min_capacity
-
+*/
   cluster_security_group_ids = [
     aws_security_group.eks_master.id,
     aws_security_group.eks_nodes.id
@@ -42,11 +48,11 @@ module "main_cluster" {
     aws_subnet.private_eks_apn1c.id,
     aws_subnet.private_eks_apn1d.id
   ]
-
+  /*
   node_labels = {
     "ingress/ready" = "true"
   }
-
+*/
   tags = merge(local.tags, {
     Name                                                      = "${local.main_cluster_name}"
     Type                                                      = "${local.type_eks}"
@@ -54,7 +60,9 @@ module "main_cluster" {
     "k8s.io/cluster-autoscaler/${local.main_cluster_name}"    = "owned",
     "k8s.io/cluster-autoscaler/enabled"                       = true
   })
+}
 
+/*
   ### --- Node --- ###
   launch_template = {
     createflag = true
@@ -137,7 +145,7 @@ data "kubernetes_service" "example" {
 output "test" {
   value = [data.kubernetes_service.example]
 }
-
+/*
 /*
 resource "kubernetes_ingress" "default" {
   provicer = kubernetes.in-house
