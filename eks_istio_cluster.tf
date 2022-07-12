@@ -5,7 +5,6 @@
 locals {
   main_cluster_name                    = "${local.main_cluster_name_prefix}_main"
   main_nodegroup_name                  = "${local.main_cluster_name_prefix}_main_woerker"
-  launch_template_name_for_main_worker = "${local.launch_template_name_prefix}_main_worker"
 }
 
 
@@ -81,8 +80,8 @@ module "inhouse_nodegroup" {
     max_size =  var.node_group_ondemand.max_capacity
     min_size =  var.node_group_ondemand.min_capacity
   }
-  launch_template_id =  
-  launch_template_version = 
+  launch_template_id =  aws_launch_template.inhouse_worker.id
+  launch_template_version = aws_launch_template.inhouse_worker.latest_version
 }
 
 
@@ -91,11 +90,7 @@ module "inhouse_nodegroup" {
   launch_template = {
     createflag = true
     name       = "${local.launch_template_name_for_main_worker}"
-    userdata   = base64encode(file("./data/eks_nodes_userdata.tpl"))
-    tags = merge(local.tags, {
-      Name = "${local.launch_template_name_prefix}_worker"
-      Type = "${local.type_launch_template}"
-    })
+
   }
 
   ### --- Istio --- ###
