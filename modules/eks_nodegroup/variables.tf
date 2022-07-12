@@ -45,7 +45,7 @@ variable "scaling_config" {
 
 variable "launch_template_id" {
   type = list(string)
-  default = [  ]
+  default = [ ]
   description = "The ID(not name) of a custom launch template to use for the EKS node group. If provided, it must specify the AMI image ID."
 }
 
