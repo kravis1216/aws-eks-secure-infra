@@ -4,6 +4,7 @@
 #---------------------------------------------------------------
 locals {
   main_cluster_name                    = "${local.main_cluster_name_prefix}_main"
+  main_nodegroup_name                  = "${local.main_cluster_name_prefix}_main_woerker"
   launch_template_name_for_main_worker = "${local.launch_template_name_prefix}_main_worker"
 }
 
@@ -65,8 +66,23 @@ module "main_cluster" {
 }
 
 module "inhouse_nodegroup" {
+  name_of_node_group = local.main_nodegroup_name
 
-
+  name_of_cluster = module.main_cluster.cluster_name
+  node_role_arn = aws_iam_role.eks_nodes_roles.arn
+  subnet_ids =  [
+    aws_subnet.private_eks_apn1a.id,
+    aws_subnet.private_eks_apn1c.id,
+    aws_subnet.private_eks_apn1d.id
+  ]
+  instance_types = var.node_group_ondemand.instance_types.main_cluster
+  scaling_config = {
+    desirec_size =  var.node_group_ondemand.desired_capacity
+    max_size =  var.node_group_ondemand.max_capacity
+    min_size =  var.node_group_ondemand.min_capacity
+  }
+  launch_template_id =  
+  launch_template_version = 
 }
 
 
