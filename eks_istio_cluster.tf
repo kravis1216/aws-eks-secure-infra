@@ -11,6 +11,8 @@ locals {
 #---------------------------------------------------------------
 # modules 
 #---------------------------------------------------------------
+### ========== EKS Cluster ========== ####
+
 module "main_cluster" {
 /*
   providers = {
@@ -61,6 +63,12 @@ module "main_cluster" {
     "k8s.io/cluster-autoscaler/enabled"                       = true
   })
 }
+
+module "inhouse_nodegroup" {
+
+
+}
+
 
 /*
   ### --- Node --- ###
